@@ -17,7 +17,7 @@ mount "${DEVICE_NAME}p2" "${P2_DIR}"
 
 # Run the upgrade
 echo
-echo "Upgrading Rancher OS"
+echo "Upgrading BurmillaOS"
 ros os upgrade --force --no-reboot
 
 # Copy kernels and initrds
@@ -47,19 +47,19 @@ fi
 cat >> "${GRUB_CFG_PATH}" <<EOF
 set timeout=5
 
-menuentry "Rancher $CURRENT_VERSION from GPT" {
+menuentry "BurmillaOS $CURRENT_VERSION from GPT" {
         search --no-floppy --set=root --label RANCHER_STATE
     linux    /boot/$CURRENT_KERNEL_FILE printk.devkmsg=on rancher.state.dev=LABEL=RANCHER_STATE rancher.state.wait panic=10 console=tty0
     initrd   /boot/$CURRENT_INITRD_FILE
 }
 
-menuentry "Previous Rancher from GPT ($PREVIOUS_VERSION)" {
+menuentry "Previous BurmillaOS from GPT ($PREVIOUS_VERSION)" {
         search --no-floppy --set=root --label RANCHER_STATE
     linux    /boot/$PREVIOUS_KERNEL_FILE printk.devkmsg=on rancher.state.dev=LABEL=RANCHER_STATE rancher.state.wait panic=10 console=tty0
     initrd   /boot/$PREVIOUS_INITRD_FILE
 }
 
-menuentry "Install Rancher" {
+menuentry "Install BurmillaOS" {
     linux    /boot/$CURRENT_KERNEL_FILE rancher.autologin=tty1 rancher.autologin=ttyS0 rancher.autologin=ttyS1 console=tty1 console=ttyS0 console=ttyS1 printk.devkmsg=on panic=10 ---
     initrd   /boot/$CURRENT_INITRD_FILE
 }

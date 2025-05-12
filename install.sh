@@ -54,7 +54,7 @@ mkfs.ext4 -F -i 4096 -O 64bit -L RANCHER_STATE ${DEVICE_NAME}p2
 mkdir /dev/sr0
 
 echo
-echo "Installing RancherOS"
+echo "Installing BurmillaOS"
 ros install \
     -t gptsyslinux \
     -c "${CLOUD_CONFIG_FILE_PATH}" \

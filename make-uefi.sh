@@ -6,10 +6,10 @@
 apt update
 apt install wget p7zip-full -y
 
-UB_ISO_URL="http://releases.ubuntu.com/18.04.4/ubuntu-18.04.4-live-server-amd64.iso"
+UB_ISO_URL="http://releases.ubuntu.com/noble/ubuntu-24.04.2-live-server-amd64.iso"
 UB_ISO_FILE_NAME="ubuntu.iso"
-ROS_ISO_URL="https://github.com/rancher/os/releases/download/v1.5.5/rancheros.iso"
-ROS_ISO_FILE_NAME="rancheros.iso"
+ROS_ISO_URL="https://github.com/burmilla/os/releases/download/v2.0.2/burmillaos-v2.0.2.iso"
+ROS_ISO_FILE_NAME="burmillaos.iso"
 DOWNLOAD_DIR="."
 TEMP_DIR="./tmp"
 ISO_DIR_NAME="iso"
@@ -57,7 +57,7 @@ GRUB_CFG_PATH="${ISO_DIR_PATH}/boot/grub/grub.cfg"
 rm ${GRUB_CFG_PATH}
 cat >> ${GRUB_CFG_PATH} <<EOF
 set timeout=5
-menuentry "Install Rancher $CURRENT_VERSION" {
+menuentry "Install BurmillaOS $CURRENT_VERSION" {
     linux	/boot/$CURRENT_KERNEL_FILE rancher.autologin=tty1 rancher.autologin=ttyS0 rancher.autologin=ttyS1 console=tty1 console=ttyS0 console=ttyS1 printk.devkmsg=on panic=10 ---
     initrd	/boot/$CURRENT_INITRD_FILE
 }
