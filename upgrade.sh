@@ -1,9 +1,13 @@
 #!/bin/bash
 
+set -eu
+
 # Must be run as root
 [[ $EUID > 0 ]] && echo "Error: must run as root/su" && exit 1
 
-DEVICE_NAME="/dev/nvme0n1"
+DEST_DEVICE="/dev/sda"
+DEST_DEVICE_P1="/dev/sda1"
+DEST_DEVICE_P2="/dev/sda2"
 P1_DIR="/mnt/p1"
 P2_DIR="/mnt/p2"
 
@@ -12,8 +16,8 @@ echo
 echo "Mounting partitions"
 mkdir "${P1_DIR}"
 mkdir "${P2_DIR}"
-mount "${DEVICE_NAME}p1" "${P1_DIR}"
-mount "${DEVICE_NAME}p2" "${P2_DIR}"
+mount "${DEST_DEVICE_P1}" "${P1_DIR}"
+mount "${DEST_DEVICE_P2}" "${P2_DIR}"
 
 # Run the upgrade
 echo

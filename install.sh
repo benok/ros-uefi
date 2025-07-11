@@ -1,19 +1,32 @@
 #!/bin/bash
 
+#set -x
+set -u
+set -o pipefail
+
 # Must be run as root
 [[ $EUID > 0 ]] && echo "Error: must run as root/su" && exit 1
 
-USB_DEVICE_NAME="/dev/sda1"
-USB_DEVICE_MOUNT_DIR="/mnt/ddd"
-DEVICE_NAME="/dev/nvme0n1"
-CLOUD_CONFIG_FILE_PATH="${USB_DEVICE_MOUNT_DIR}/cloud-config.yml"
+SRC_DEVICE="/dev/sr0"
+SRC_DEVICE_MOUNT_DIR="/mnt/src"
+DEST_DEVICE="/dev/sda"
+DEST_DEVICE_P1="/dev/sda1"
+DEST_DEVICE_P2="/dev/sda2"
+CLOUD_CONFIG_FILE_PATH="./cloud-config.yml"
 
 P1_DIR="/tmp/d"
 
+# Install dosfstools if not exists
+if ! dpkg -s dosfstools >/dev/null 2>&1; then
+    echo "Installing dosfstools"
+    apt update
+    apt install -y dosfstools
+fi
+
 echo
-echo "Formatting device ${DEVICE_NAME}"
+echo "Formatting device ${DEST_DEVICE}"
 echo "  (ignore any warnings about 'y' command)"
-fdisk ${DEVICE_NAME} <<EOF
+fdisk ${DEST_DEVICE}<<EOF
 g
 n
 1
@@ -31,35 +44,39 @@ p
 w
 EOF
 
-echo
-echo "Formatting EFI partition"
-mkdosfs -n RANCHER -F 32 ${DEVICE_NAME}p1
-echo "Mounting EFI partition"
-mkdir "${P1_DIR}"
-mount -t vfat ${DEVICE_NAME}p1 "${P1_DIR}"
+set -e
 
 echo
-echo "Mounting USB device"
-mkdir "${USB_DEVICE_MOUNT_DIR}"
-mount ${USB_DEVICE_NAME} "${USB_DEVICE_MOUNT_DIR}"
+echo "Formatting EFI partition"
+mkfs -t fat -n RANCHER -F 32 ${DEST_DEVICE_P1} || true
+echo "Mounting EFI partition"
+mkdir -p "${P1_DIR}"
+mount -t vfat ${DEST_DEVICE_P1} "${P1_DIR}" || true
+
+echo
+echo "Mounting SRC device"
+mkdir -p "${SRC_DEVICE_MOUNT_DIR}"
+mount ${SRC_DEVICE} "${SRC_DEVICE_MOUNT_DIR}" || true
 
 echo
 echo "Copying EFI boot files"
-cp "${USB_DEVICE_MOUNT_DIR}/boot" "${P1_DIR}" -r
-cp "${USB_DEVICE_MOUNT_DIR}/EFI" "${P1_DIR}" -r
+cp "${SRC_DEVICE_MOUNT_DIR}/boot" "${P1_DIR}" -r
+cp "${SRC_DEVICE_MOUNT_DIR}/EFI" "${P1_DIR}" -r
 
 echo
 echo "Creating ext4 filesystem on p2"
-mkfs.ext4 -F -i 4096 -O 64bit -L RANCHER_STATE ${DEVICE_NAME}p2
-mkdir /dev/sr0
+mkfs.ext4 -F -i 4096 -O 64bit -L RANCHER_STATE ${DEST_DEVICE_P2}
+if [ "${SRC_DEVICE}" != "/dev/sr0" ]; then
+  mkdir -p /dev/sr0
+fi
 
 echo
 echo "Installing BurmillaOS"
 ros install \
     -t gptsyslinux \
     -c "${CLOUD_CONFIG_FILE_PATH}" \
-    -d ${DEVICE_NAME} \
-    -p ${DEVICE_NAME}p2 \
+    -d ${DEST_DEVICE} \
+    -p ${DEST_DEVICE_P2} \
     --force \
     --no-reboot
 
@@ -76,17 +93,17 @@ rm ${GRUB_CFG_PATH}
 cat >> ${GRUB_CFG_PATH} <<EOF
 set timeout=5
 
-menuentry "Rancher $CURRENT_VERSION from GPT" {
+menuentry "BurmillaOS $CURRENT_VERSION from GPT" {
         search --no-floppy --set=root --label RANCHER_STATE
     linux    /boot/$CURRENT_KERNEL_FILE printk.devkmsg=on rancher.state.dev=LABEL=RANCHER_STATE rancher.state.wait panic=10 console=tty0
     initrd   /boot/$CURRENT_INITRD_FILE
 }
 
-menuentry "Install Rancher" {
+menuentry "Install BurmillaOS" {
     linux    /boot/$CURRENT_KERNEL_FILE rancher.autologin=tty1 rancher.autologin=ttyS0 rancher.autologin=ttyS1 console=tty1 console=ttyS0 console=ttyS1 printk.devkmsg=on panic=10 ---
     initrd   /boot/$CURRENT_INITRD_FILE
 }
 EOF
 
 echo
-echo "Installation (should be) complete, remove USB installation device and reboot."
+echo "Installation (should be) complete, remove SRC installation device and reboot."
