@@ -7,6 +7,12 @@ set -o pipefail
 # Must be run as root
 [[ $EUID > 0 ]] && echo "Error: must run as root/su" && exit 1
 
+SRC_DEVICE=${SRC_DEVICE:-/dev/sr0}
+DEST_DEVICE=${DEST_DEVICE:-/dev/sda}
+EFI_PARTITION_SIZE=${EFI_PARTITION_SIZE:-384M} # current boot files & two versions of kernels & initrds requires "265M"
+CLOUD_CONFIG_FILE_PATH=${CLOUD_CONFIG_FILE_PATH:-./cloud-config.yml}
+SRC_DEVICE_MOUNT_DIR=${SRC_DEVICE_MOUNT_DIR:-/mnt/src}
+
 # get partition device name
 # (/dev/sda 1 -> /dev/sda1, /dev/nvme0n1 1 -> /dev/nvme0n1p1)
 get_part_dev() {
@@ -27,14 +33,8 @@ get_part_dev() {
     echo $(readlink -f $devbyid-part$pn)
 }
 
-SRC_DEVICE="/dev/sr0"
-SRC_DEVICE_MOUNT_DIR="/mnt/src"
-DEST_DEVICE="/dev/sda"
 DEST_DEVICE_P1=$(get_part_dev $DEST_DEVICE 1)
 DEST_DEVICE_P2=$(get_part_dev $DEST_DEVICE 2)
-EFI_PARTITION_SIZE="384M" # current boot files & two versions of kernels & initrds requires "265M"
-CLOUD_CONFIG_FILE_PATH="./cloud-config.yml"
-
 P1_DIR="/tmp/d"
 
 # Install dosfstools if not exists

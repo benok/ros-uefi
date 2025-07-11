@@ -5,7 +5,7 @@ set -eu
 # Must be run as root
 [[ $EUID > 0 ]] && echo "Error: must run as root/su" && exit 1
 
-DEST_DEVICE="/dev/sda"
+DEST_DEVICE=${DEST_DEVICE:-/dev/sda}
 
 # get partition device name
 # (/dev/sda 1 -> /dev/sda1, /dev/nvme0n1 1 -> /dev/nvme0n1p1)

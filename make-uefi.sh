@@ -9,14 +9,15 @@ set -o pipefail
 apt update
 apt install wget p7zip-full -y
 
-UB_ISO_URL="http://releases.ubuntu.com/noble/ubuntu-24.04.2-live-server-amd64.iso"
+UB_ISO_URL=${UB_ISO_URL:-http://releases.ubuntu.com/noble/ubuntu-24.04.2-live-server-amd64.iso}
+ROS_VERSION=${ROS_VERSION:-v2.0.2}
+ROS_ISO_URL=${ROS_ISO_URL:-https://github.com/burmilla/os/releases/download/${ROS_VERSION}/burmillaos-${ROS_VERSION}.iso}
+
 UB_ISO_FILE_NAME="ubuntu.iso"
-ROS_VERSION=v2.0.3
-ROS_ISO_URL="https://github.com/burmilla/os/releases/download/${ROS_VERSION}/burmillaos-${ROS_VERSION}.iso"
 ROS_ISO_FILE_NAME="burmillaos.iso"
 DOWNLOAD_DIR="."
-TEMP_DIR="./tmp"
-ISO_DIR_NAME="iso"
+TEMP_DIR=./tmp
+ISO_DIR_NAME=iso
 
 # Rebuild temp dir
 rm -rf ${TEMP_DIR}
