@@ -124,6 +124,10 @@ menuentry "Install BurmillaOS" {
     linux    /boot/$CURRENT_KERNEL_FILE rancher.autologin=tty1 rancher.autologin=ttyS0 rancher.autologin=ttyS1 console=tty1 console=ttyS0 console=ttyS1 printk.devkmsg=on panic=10 ---
     initrd   /boot/$CURRENT_INITRD_FILE
 }
+
+menuentry "UEFI Firmware Settings" {
+    fwsetup
+}
 EOF
 
 echo
