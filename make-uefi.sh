@@ -1,5 +1,8 @@
 #!/bin/bash
 
+set -eu
+set -o pipefail
+
 # Must be run as root
 [[ $EUID > 0 ]] && echo "Error: must run as root/su" && exit 1
 
