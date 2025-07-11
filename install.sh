@@ -114,7 +114,7 @@ rm ${GRUB_CFG_PATH}
 cat >> ${GRUB_CFG_PATH} <<EOF
 set timeout=5
 
-menuentry "BurmillaOS $CURRENT_VERSION from GPT" {
+menuentry "BurmillaOS $CURRENT_VERSION" {
         search --no-floppy --set=root --label RANCHER_STATE
     linux    /boot/$CURRENT_KERNEL_FILE printk.devkmsg=on rancher.state.dev=LABEL=RANCHER_STATE rancher.state.wait panic=10 console=tty0
     initrd   /boot/$CURRENT_INITRD_FILE
