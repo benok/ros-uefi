@@ -12,6 +12,7 @@ SRC_DEVICE_MOUNT_DIR="/mnt/src"
 DEST_DEVICE="/dev/sda"
 DEST_DEVICE_P1="/dev/sda1"
 DEST_DEVICE_P2="/dev/sda2"
+EFI_PARTITION_SIZE="2G"
 CLOUD_CONFIG_FILE_PATH="./cloud-config.yml"
 
 P1_DIR="/tmp/d"
@@ -31,7 +32,7 @@ g
 n
 1
 
-+2G
++${EFI_PARTITION_SIZE}
 y
 t
 1
