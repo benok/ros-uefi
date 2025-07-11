@@ -35,8 +35,8 @@ P2_DIR="/mnt/p2"
 # Mount partitions
 echo
 echo "Mounting partitions"
-mkdir "${P1_DIR}"
-mkdir "${P2_DIR}"
+mkdir -p "${P1_DIR}"
+mkdir -p "${P2_DIR}"
 mount "${DEST_DEVICE_P1}" "${P1_DIR}"
 mount "${DEST_DEVICE_P2}" "${P2_DIR}"
 
@@ -87,6 +87,10 @@ menuentry "Previous BurmillaOS from GPT ($PREVIOUS_VERSION)" {
 menuentry "Install BurmillaOS" {
     linux    /boot/$CURRENT_KERNEL_FILE rancher.autologin=tty1 rancher.autologin=ttyS0 rancher.autologin=ttyS1 console=tty1 console=ttyS0 console=ttyS1 printk.devkmsg=on panic=10 ---
     initrd   /boot/$CURRENT_INITRD_FILE
+}
+
+menuentry "UEFI Firmware Settings" {
+    fwsetup
 }
 EOF
 
