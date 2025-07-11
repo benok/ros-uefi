@@ -7,11 +7,31 @@ set -o pipefail
 # Must be run as root
 [[ $EUID > 0 ]] && echo "Error: must run as root/su" && exit 1
 
+# get partition device name
+# (/dev/sda 1 -> /dev/sda1, /dev/nvme0n1 1 -> /dev/nvme0n1p1)
+get_part_dev() {
+    dev=$1
+    pn=$2
+    d=/dev/disk/by-id
+    devbyid=
+    for i in $(ls $d); do
+      resolved=$(readlink -f $d/$i)
+      if [ "$resolved" = "$dev" ]; then
+        devbyid=$d/$i
+      fi
+    done
+    if [ "$devbyid" = "" ]; then
+      echo "failed to get part #$i device of $dev"
+      exit 1
+    fi
+    echo $(readlink -f $devbyid-part$pn)
+}
+
 SRC_DEVICE="/dev/sr0"
 SRC_DEVICE_MOUNT_DIR="/mnt/src"
 DEST_DEVICE="/dev/sda"
-DEST_DEVICE_P1="/dev/sda1"
-DEST_DEVICE_P2="/dev/sda2"
+DEST_DEVICE_P1=$(get_part_dev $DEST_DEVICE 1)
+DEST_DEVICE_P2=$(get_part_dev $DEST_DEVICE 2)
 EFI_PARTITION_SIZE="384M" # current boot files & two versions of kernels & initrds requires "265M"
 CLOUD_CONFIG_FILE_PATH="./cloud-config.yml"
 
