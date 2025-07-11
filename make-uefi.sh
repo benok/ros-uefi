@@ -3,11 +3,8 @@
 set -eu
 set -o pipefail
 
-# Must be run as root
-[[ $EUID > 0 ]] && echo "Error: must run as root/su" && exit 1
-
-apt update
-apt install wget p7zip-full -y
+sudo apt update
+sudo apt install wget p7zip-full -y
 
 UB_ISO_URL=${UB_ISO_URL:-http://releases.ubuntu.com/noble/ubuntu-24.04.2-live-server-amd64.iso}
 ROS_VERSION=${ROS_VERSION:-v2.0.2}
