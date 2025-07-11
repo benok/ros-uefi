@@ -1,10 +1,14 @@
 # taken from https://github.com/syzdek/efibootiso/blob/master/Makefile
 
-CD=./tmp/iso
+include .env
+
+ROS_VERSION ?= v2.0.3
+ISO_DIR_PATH ?= ./tmp/iso
+CD=$(ISO_DIR_PATH)
 
 .PHONY: all clean
 
-all: burmillaos-uefi.iso
+all: burmillaos-$(ROS_VERSION)-uefi.iso
 
 $(CD)/EFI/boot/efiboot.img: $(CD)/EFI/boot/bootx64.efi $(CD)/EFI/boot/grubx64.efi $(CD)/EFI/boot/mmx64.efi
 	@rm -f "$(@)"
@@ -50,7 +54,7 @@ $(CD)/install.sh: install.sh
 $(CD)/upgrade.sh: upgrade.sh
 	sudo cp "$<" "$@"
 
-burmillaos-uefi.iso: $(CD)/EFI/boot/efiboot.img $(CD)/boot/isolinux/isolinux.bin $(CD)/install.sh $(CD)/upgrade.sh
+burmillaos-$(ROS_VERSION)-uefi.iso: $(CD)/EFI/boot/efiboot.img $(CD)/boot/isolinux/isolinux.bin $(CD)/install.sh $(CD)/upgrade.sh
 	cd $(CD) && \
 	xorriso -as mkisofs \
 	   -o "../../$(@)" \
@@ -73,4 +77,4 @@ burmillaos-uefi.iso: $(CD)/EFI/boot/efiboot.img $(CD)/boot/isolinux/isolinux.bin
 	@touch "$(@)"
 
 clean:
-	rm -f burmillaos-uefi.iso $(CD)/EFI/boot/efiboot.img:
+	rm -f burmillaos-$(ROS_VERSION)-uefi.iso $(CD)/EFI/boot/efiboot.img:

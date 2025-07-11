@@ -14,10 +14,21 @@ ROS_VERSION=${ROS_VERSION:-v2.0.2}
 ROS_ISO_URL=${ROS_ISO_URL:-https://github.com/burmilla/os/releases/download/${ROS_VERSION}/burmillaos-${ROS_VERSION}.iso}
 
 UB_ISO_FILE_NAME="ubuntu.iso"
-ROS_ISO_FILE_NAME="burmillaos.iso"
-DOWNLOAD_DIR="."
-TEMP_DIR=./tmp
-ISO_DIR_NAME=iso
+ROS_ISO_FILE_NAME="burmillaos-${ROS_VERSION}.iso"
+
+DOWNLOAD_DIR=${DOWNLOAD_DIR:-.}
+TEMP_DIR=${TEMP_DIR:-./tmp}
+ISO_DIR_NAME=${ISO_DIR_NAME:-iso}
+ISO_DIR_PATH=${ISO_DIR_PATH:-${TEMP_DIR}/${ISO_DIR_NAME}}
+UB_ISO_DIR_PATH=${UB_ISO_DIR_PATH:-${TEMP_DIR}/ub}
+
+rm -f .env
+cat > .env <<EOF
+ROS_VERSION=${ROS_VERSION}
+ISO_DIR_PATH=${ISO_DIR_PATH}
+EOF
+
+cat .env
 
 # Rebuild temp dir
 rm -rf ${TEMP_DIR}
@@ -40,9 +51,7 @@ if [ ! -f "${UB_ISO_FILE_PATH}" ] || [ ! -f "${ROS_ISO_FILE_PATH}" ]; then
 fi
 
 # Extract files
-UB_ISO_DIR_PATH="${TEMP_DIR}/ub"
 7z x "${UB_ISO_FILE_PATH}" -o"${UB_ISO_DIR_PATH}"
-ISO_DIR_PATH="${TEMP_DIR}/${ISO_DIR_NAME}"
 7z x "${ROS_ISO_FILE_PATH}" -o"${ISO_DIR_PATH}"
 
 # Copy efi

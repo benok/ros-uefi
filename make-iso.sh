@@ -6,7 +6,8 @@ set -o pipefail
 # Must be run as root
 [[ $EUID > 0 ]] && echo "Error: must run as root/su" && exit 1
 
-ISO_DIR_PATH=./tmp/iso
+[[ -r .env ]] && . ./.env
+ISO_DIR_PATH=${ISO_DIR_PATH:-./tmp/iso}
 
 # Must run after make-uefi.sh
 [[ ! -f $ISO_DIR_PATH/boot/grub/grub.cfg ]] && echo "Error must run after make-uefi.sh" && exit 1
